@@ -21,6 +21,7 @@ Git worktrees are great for parallel development, but untracked files (migration
 /worktree create feat/my-feature              # Create from main (default)
 /worktree create feat/my-feature from dev     # Create from dev branch
 /worktree create feat/my-feature from current # Create from current branch
+/worktree create feat/my-feature and switch   # Create and switch to it
 /worktree list                                # List worktrees
 /worktree sync                                # Sync files to current worktree
 /worktree clean <path>                        # Remove worktree

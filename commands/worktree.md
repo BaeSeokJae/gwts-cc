@@ -11,7 +11,7 @@ Create Git worktrees and automatically synchronize untracked files (migrations/,
 
 ## Available Commands
 
-- `/worktree create <branch> [path] [from <base>]` - Create new worktree and sync files
+- `/worktree create <branch> [path] [from <base>] [and switch]` - Create new worktree and sync files
 - `/worktree sync [path]` - Sync files to existing worktree
 - `/worktree list` - List all worktrees
 - `/worktree clean <path>` - Remove worktree
@@ -24,12 +24,14 @@ Parse $ARGUMENTS and perform the appropriate action.
 
 ### 1. create Command
 
-**Input**: `/worktree create <branch> [path] [from <base>]`
+**Input**: `/worktree create <branch> [path] [from <base>] [and switch]`
 
 **Examples:**
 - `/worktree create feat/new` - Create from baseBranch (default: main)
 - `/worktree create feat/new from dev` - Create from dev branch
 - `/worktree create feat/new from current` - Create from current branch
+- `/worktree create feat/new and switch` - Create and switch to worktree
+- `/worktree create feat/new from dev and switch` - Create from dev and switch
 
 **Steps**:
 
@@ -131,6 +133,13 @@ Parse $ARGUMENTS and perform the appropriate action.
    Branch: <branch>
    Synced files: <count>
    ```
+
+11. **Switch to Worktree** (if "and switch" in args)
+   ```bash
+   cd <worktree_path>
+   ```
+   - Output: "Switched to: <worktree_path>"
+   - Note: This changes the current working directory
 
 ---
 
