@@ -34,10 +34,8 @@ Parse $ARGUMENTS and perform the appropriate action.
    ```
    - On failure: Output "Current directory is not a Git repository" and exit
 
-2. **Load Configuration Files**
-   - Read `.worktree.json` (using Read tool)
-   - Read `.worktree.local.json` (if exists)
-   - Use defaults if not found:
+2. **Load Configuration with Priority**
+   - Start with defaults:
      ```json
      {
        "includes": [],
@@ -47,12 +45,14 @@ Parse $ARGUMENTS and perform the appropriate action.
        "defaultPath": "../worktrees"
      }
      ```
+   - Read `.gwts` (team config, if exists)
+   - Read `.claude/gwts/worktree.json` (personal config, if exists)
    - Merge rules:
-     - `includes`: Union
-     - `excludes`: Union
-     - `mode`: Local config takes precedence
-     - `hooks`: Local config takes precedence
-     - `defaultPath`: Local config takes precedence
+     - `includes`: Union of all configs
+     - `excludes`: Union of all configs
+     - `mode`: Personal > Team > Default
+     - `hooks`: Personal > Team > Default
+     - `defaultPath`: Personal > Team > Default
 
 3. **Determine Worktree Path**
    - Use `[path]` argument if provided
@@ -188,57 +188,39 @@ Parse $ARGUMENTS and perform the appropriate action.
 
 ---
 
-## Configuration File Examples
+## Configuration Reference
 
-### `.worktree.json` (Project-wide)
+**Priority:** Personal (`.claude/gwts/worktree.json`) > Team (`.gwts`) > Defaults
 
+**Defaults:**
 ```json
 {
-  "includes": [
-    "migrations/",
-    "apps/mono/src/scripts/"
-  ],
-  "excludes": [
-    ".claude/",
-    ".codex/",
-    ".zed/"
-  ],
+  "includes": [],
+  "excludes": [],
   "mode": "symlink",
-  "hooks": {
-    "postCreate": "pnpm install"
-  },
+  "hooks": {},
   "defaultPath": "../worktrees"
 }
 ```
 
-### `.worktree.local.json` (Personal)
+**Options:**
 
-```json
-{
-  "includes": [
-    ".env.local",
-    ".env.development"
-  ],
-  "mode": "copy",
-  "hooks": {
-    "postCreate": "pnpm install && pnpm build:mono"
-  }
-}
-```
+| Option | Type | Description |
+|--------|------|-------------|
+| `includes` | `string[]` | Patterns to sync (merged across configs) |
+| `excludes` | `string[]` | Patterns to skip (merged across configs) |
+| `mode` | `"symlink"` \| `"copy"` | symlink=shared, copy=independent |
+| `hooks.postCreate` | `string` | Command to run after worktree creation |
+| `hooks.postSync` | `string` | Command to run after sync |
+| `defaultPath` | `string` | Where to create worktrees |
+
+**Pattern syntax:** Standard glob (`migrations/`, `*.config.js`, `apps/*/db/`)
 
 ---
 
 ## Error Handling
 
-- Not a Git repository: Clear error message
-- Worktree creation failed: Show git error message
-- File sync failed: Show individual file errors but continue
-- Hook failed: Show warning and continue
-
----
-
-## Important Notes
-
-- **symlink mode**: Changes to original files are immediately reflected in all worktrees
-- **copy mode**: Completely independent, requires manual sync
-- `.worktree.local.json` is gitignored and not committed
+- Not a Git repository → Exit with clear message
+- Worktree creation failed → Show git error
+- File sync failed → Log error, continue with others
+- Hook failed → Show warning, continue
