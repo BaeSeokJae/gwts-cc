@@ -11,7 +11,7 @@ Create Git worktrees and automatically synchronize untracked files (migrations/,
 
 ## Available Commands
 
-- `/worktree create <branch> [path]` - Create new worktree and sync files
+- `/worktree create <branch> [path] [from <base>]` - Create new worktree and sync files
 - `/worktree sync [path]` - Sync files to existing worktree
 - `/worktree list` - List all worktrees
 - `/worktree clean <path>` - Remove worktree
@@ -24,7 +24,12 @@ Parse $ARGUMENTS and perform the appropriate action.
 
 ### 1. create Command
 
-**Input**: `/worktree create <branch> [path]`
+**Input**: `/worktree create <branch> [path] [from <base>]`
+
+**Examples:**
+- `/worktree create feat/new` - Create from baseBranch (default: main)
+- `/worktree create feat/new from dev` - Create from dev branch
+- `/worktree create feat/new from current` - Create from current branch
 
 **Steps**:
 
@@ -42,7 +47,8 @@ Parse $ARGUMENTS and perform the appropriate action.
        "excludes": [],
        "mode": "symlink",
        "hooks": {},
-       "defaultPath": "../worktrees"
+       "defaultPath": "../worktrees",
+       "baseBranch": "main"
      }
      ```
    - Read `.gwts` (team config, if exists)
@@ -53,31 +59,49 @@ Parse $ARGUMENTS and perform the appropriate action.
      - `mode`: Personal > Team > Default
      - `hooks`: Personal > Team > Default
      - `defaultPath`: Personal > Team > Default
+     - `baseBranch`: Personal > Team > Default
 
 3. **Determine Worktree Path**
    - Use `[path]` argument if provided
    - Otherwise use `{defaultPath}/{branch}`
    - Example: `../worktrees/feat/new-feature`
 
-4. **Create Worktree**
-   ```bash
-   git worktree add <path> <branch>
-   ```
-   - Branch is auto-created if it doesn't exist
+4. **Determine Base Branch**
+   - Parse arguments for "from <base>" pattern
+   - If "from current": Use current branch
+     ```bash
+     baseBranch=$(git branch --show-current)
+     ```
+   - Else if "from <base>": Use specified base
+   - Else: Use config's `baseBranch` (default: "main")
+
+5. **Create Worktree**
+   - Check if branch exists:
+     ```bash
+     git rev-parse --verify <branch> 2>/dev/null
+     ```
+   - If exists: Create worktree from existing branch
+     ```bash
+     git worktree add <path> <branch>
+     ```
+   - If not exists: Create new branch from baseBranch
+     ```bash
+     git worktree add -b <branch> <path> <baseBranch>
+     ```
    - On failure: Output error and exit
 
-5. **Collect Untracked Files**
+6. **Collect Untracked Files**
    ```bash
    git ls-files --others --exclude-standard
    ```
 
-6. **Filter by Pattern Matching**
+7. **Filter by Pattern Matching**
    - Using Glob tool or bash:
    - Select only files matching `includes` patterns
    - Exclude files matching `excludes` patterns
    - Example: `includes: ["migrations/", "*.env"]`, `excludes: [".claude/"]`
 
-7. **Sync Files**
+8. **Sync Files**
    - Find git root path:
      ```bash
      git rev-parse --show-toplevel
@@ -93,14 +117,14 @@ Parse $ARGUMENTS and perform the appropriate action.
        ```
    - Process directories recursively
 
-8. **Execute postCreate Hook** (if defined)
+9. **Execute postCreate Hook** (if defined)
    ```bash
    cd <worktree_path> && <hook_command>
    ```
    - Example: `pnpm install`
    - Continue on failure (show warning only)
 
-9. **Output Result**
+10. **Output Result**
    ```
    Worktree created successfully
    Path: <worktree_path>
@@ -199,7 +223,8 @@ Parse $ARGUMENTS and perform the appropriate action.
   "excludes": [],
   "mode": "symlink",
   "hooks": {},
-  "defaultPath": "../worktrees"
+  "defaultPath": "../worktrees",
+  "baseBranch": "main"
 }
 ```
 
@@ -213,6 +238,7 @@ Parse $ARGUMENTS and perform the appropriate action.
 | `hooks.postCreate` | `string` | Command to run after worktree creation |
 | `hooks.postSync` | `string` | Command to run after sync |
 | `defaultPath` | `string` | Where to create worktrees |
+| `baseBranch` | `string` | Base branch for new branches |
 
 **Pattern syntax:** Standard glob (`migrations/`, `*.config.js`, `apps/*/db/`)
 

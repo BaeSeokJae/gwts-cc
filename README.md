@@ -18,10 +18,12 @@ Git worktrees are great for parallel development, but untracked files (migration
 ## Usage
 
 ```bash
-/worktree create feat/my-feature    # Create worktree + sync files
-/worktree list                      # List worktrees
-/worktree sync                      # Sync files to current worktree
-/worktree clean <path>              # Remove worktree
+/worktree create feat/my-feature              # Create from main (default)
+/worktree create feat/my-feature from dev     # Create from dev branch
+/worktree create feat/my-feature from current # Create from current branch
+/worktree list                                # List worktrees
+/worktree sync                                # Sync files to current worktree
+/worktree clean <path>                        # Remove worktree
 ```
 
 ## Configuration
@@ -47,6 +49,7 @@ That's it. Personal overrides go in `.claude/gwts/worktree.json`.
 | `mode` | `symlink` or `copy` | `symlink` |
 | `hooks.postCreate` | Command after create | - |
 | `defaultPath` | Worktree location | `../worktrees` |
+| `baseBranch` | Base for new branches | `main` |
 
 ### Mode
 
@@ -54,6 +57,23 @@ That's it. Personal overrides go in `.claude/gwts/worktree.json`.
 |------|----------|---------|
 | `symlink` | Links to original, changes sync instantly | migrations, shared configs |
 | `copy` | Independent copy, no sync | .env.local, credentials |
+
+### Base Branch
+
+Control where new branches are created from:
+
+```bash
+/worktree create feat/new              # From baseBranch (main)
+/worktree create feat/new from dev     # From dev
+/worktree create feat/new from current # From current branch
+```
+
+Set default in `.gwts`:
+```json
+{
+  "baseBranch": "develop"
+}
+```
 
 ### Patterns
 

@@ -18,10 +18,12 @@ Git worktree는 병렬 개발에 좋지만, untracked 파일(migrations, .env, s
 ## 사용법
 
 ```bash
-/worktree create feat/my-feature    # Worktree 생성 + 파일 동기화
-/worktree list                      # Worktree 목록
-/worktree sync                      # 현재 worktree에 파일 동기화
-/worktree clean <path>              # Worktree 삭제
+/worktree create feat/my-feature              # main에서 생성 (기본값)
+/worktree create feat/my-feature from dev     # dev 브랜치에서 생성
+/worktree create feat/my-feature from current # 현재 브랜치에서 생성
+/worktree list                                # Worktree 목록
+/worktree sync                                # 현재 worktree에 파일 동기화
+/worktree clean <path>                        # Worktree 삭제
 ```
 
 ## 설정
@@ -47,6 +49,7 @@ Git worktree는 병렬 개발에 좋지만, untracked 파일(migrations, .env, s
 | `mode` | `symlink` 또는 `copy` | `symlink` |
 | `hooks.postCreate` | 생성 후 실행할 명령 | - |
 | `defaultPath` | Worktree 위치 | `../worktrees` |
+| `baseBranch` | 새 브랜치 기준 | `main` |
 
 ### 모드
 
@@ -54,6 +57,23 @@ Git worktree는 병렬 개발에 좋지만, untracked 파일(migrations, .env, s
 |------|------|------|
 | `symlink` | 원본 링크, 변경 즉시 반영 | migrations, 공유 설정 |
 | `copy` | 독립 복사본, 동기화 안됨 | .env.local, 인증정보 |
+
+### 기준 브랜치
+
+새 브랜치를 어디서 만들지 제어:
+
+```bash
+/worktree create feat/new              # baseBranch(main)에서
+/worktree create feat/new from dev     # dev에서
+/worktree create feat/new from current # 현재 브랜치에서
+```
+
+`.gwts`에서 기본값 설정:
+```json
+{
+  "baseBranch": "develop"
+}
+```
 
 ### 패턴
 
