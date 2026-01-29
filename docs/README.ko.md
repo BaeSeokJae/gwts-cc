@@ -21,7 +21,6 @@ Git worktree는 병렬 개발에 좋지만, untracked 파일(migrations, .env, s
 /worktree create feat/my-feature              # main에서 생성 (기본값)
 /worktree create feat/my-feature from dev     # dev 브랜치에서 생성
 /worktree create feat/my-feature from current # 현재 브랜치에서 생성
-/worktree create feat/my-feature and switch   # 생성 후 이동
 /worktree list                                # Worktree 목록
 /worktree sync                                # 현재 worktree에 파일 동기화
 /worktree clean <path>                        # Worktree 삭제
