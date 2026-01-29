@@ -1,0 +1,14 @@
+{
+  "name": "gwts-cc",
+  "owner": {
+    "name": "BaeSeokJae"
+  },
+  "plugins": [
+    {
+      "name": "gwts-cc",
+      "source": "./",
+      "description": "Git Worktree Sync for Claude Code",
+      "version": "0.1.0"
+    }
+  ]
+}

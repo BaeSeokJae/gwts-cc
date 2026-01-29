@@ -1,0 +1,11 @@
+{
+  "name": "gwts-cc",
+  "version": "0.1.0",
+  "description": "Create Git worktrees with automatic untracked file synchronization",
+  "author": {
+    "name": "BaeSeokJae"
+  },
+  "repository": "https://github.com/BaeSeokJae/gwts-cc",
+  "license": "MIT",
+  "keywords": ["git", "worktree", "sync", "claude-code"]
+}
