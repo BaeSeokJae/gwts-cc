@@ -1,7 +1,6 @@
 ---
 name: worktree
 description: Create and manage Git worktrees with automatic untracked file synchronization
-disable-model-invocation: true
 argument-hint: "<command> [args...]"
 allowed-tools: Bash, Read, Write, Glob
 ---

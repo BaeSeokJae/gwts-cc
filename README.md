@@ -64,7 +64,7 @@ Personal overrides go in `.worktree.local.json` (gitignored).
 
 ## Documentation
 
-See [SKILL.md](skills/worktree/SKILL.md) for detailed command reference.
+See [commands/worktree.md](commands/worktree.md) for detailed command reference.
 
 ## License
 

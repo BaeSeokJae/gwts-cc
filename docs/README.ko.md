@@ -64,7 +64,7 @@
 
 ## 문서
 
-자세한 명령어는 [SKILL.md](../skills/worktree/SKILL.md) 참고.
+자세한 명령어는 [commands/worktree.md](../commands/worktree.md) 참고.
 
 ## 라이선스
 
